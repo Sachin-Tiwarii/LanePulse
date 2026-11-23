@@ -1,12 +1,7 @@
 import math
-
 import osmnx as ox
-
 from app.config import GRAPH_PATH, MAX_SNAP_DISTANCE_METERS
-
-
 _graph = None
-
 
 def get_graph():
     global _graph
