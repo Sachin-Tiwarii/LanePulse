@@ -1,13 +1,54 @@
+
+# ==============================
+# Python Virtual Environments
+# ==============================
 .venv/
 venv/
+env/
+
+# ==============================
+# Python Cache & Compiled Files
+# ==============================
 __pycache__/
 *.py[cod]
+*$py.class
+
+# ==============================
+# Environment Variables & Secrets
+# ==============================
 .env
 .env.*
 !.env.example
+
+# ==============================
+# IDE & Editor Settings
+# ==============================
 .vscode/
 .idea/
+
+# ==============================
+# Testing & Type Checking
+# ==============================
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ==============================
+# Generated Road Network Data
+# ==============================
 data/*.graphml
 cache/
+
+# ==============================
+# Build & Distribution
+# ==============================
+build/
+dist/
+*.egg-info/
+
+# ==============================
+# Logs
+# ==============================
+*.log
