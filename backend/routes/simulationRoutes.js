@@ -1,44 +1,48 @@
-
 import express from "express";
 
 import {
-    startSimulation,
-    getSimulationStatus,
-    simulationSignalPlan,
-    intersectionCleared
+  startSimulation,
+  getSimulationStatus,
+  simulationSignalPlan,
+  intersectionCleared,
 } from "../controllers/simulationController.js";
 
 import {
-    validateRoute,
-    validateSimulationSignal,
-    validateSessionId
+  validateRoute,
+  validateSimulationSignal,
+  validateSessionId,
 } from "../validators/aiValidator.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Start Simulation
-router.post("/start", authMiddleware, validateRoute, startSimulation);
+// All simulation endpoints require login
+router.use(authMiddleware);
 
-// Get Simulation Status
-router.get("/:sessionId", authMiddleware, validateSessionId, getSimulationStatus);
-
-// Simulation Signal Plan
 router.post(
-    "/:sessionId/signal-plan",
-    authMiddleware,
-    validateSessionId,
-    validateSimulationSignal,
-    simulationSignalPlan
+  "/start",
+  validateRoute,
+  startSimulation
 );
 
-// Intersection Cleared
+router.get(
+  "/:sessionId",
+  validateSessionId,
+  getSimulationStatus
+);
+
 router.post(
-    "/:sessionId/intersection-cleared",
-    authMiddleware,
-    validateSessionId,
-    intersectionCleared
+  "/:sessionId/signal-plan",
+  validateSessionId,
+  validateSimulationSignal,
+  simulationSignalPlan
+);
+
+router.post(
+  "/:sessionId/intersection-cleared",
+  validateSessionId,
+  intersectionCleared
 );
 
 export default router;

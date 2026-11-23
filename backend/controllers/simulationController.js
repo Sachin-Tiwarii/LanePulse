@@ -6,157 +6,111 @@ import {
     clearIntersection as clearAIIntersection,
 } from "../services/aiService.js";
 
-import Simulation from "../models/Simulation.js";
-
-// Start Simulation
+// Start a simulation through the Python service.
 export const startSimulation = async (req, res) => {
     try {
-        // Start simulation through AI service
         const result = await startAI(req.body);
 
-        // Get session ID from AI response
-        const sessionId = result.sessionId || result.session_id;
+        const simulation = result.simulation;
+        const sessionId = simulation?.session_id;
 
         if (!sessionId) {
             return res.status(502).json({
                 success: false,
-                message: "AI service did not return a session ID",
-                data: result
+                message: "Python service did not return a simulation session ID.",
+                data: result,
             });
         }
 
-        // Save simulation in MongoDB
-        const simulation = await Simulation.create({
-            userId: req.user._id,
-            sessionId,
-            startLocation: {
-                lat: req.body.start_lat,
-                lon: req.body.start_lon
-            },
-            destination: {
-                lat: req.body.end_lat,
-                lon: req.body.end_lon
-            },
-            route: result.route || {},
-            status: "running"
-        });
-
-        res.status(201).json({
+        return res.status(201).json({
             success: true,
-            message: "Simulation started and saved successfully",
+            message: "Emergency simulation started successfully.",
+            sessionId,
             simulation,
-            aiResponse: result
+            route: result.route,
         });
-
     } catch (error) {
-        res.status(error.response?.status || 500).json({
+        console.error("Start simulation error:", error.message);
+
+        return res.status(error.response?.status || 500).json({
             success: false,
-            message: error.response?.data?.detail || error.message
+            message:
+                error.response?.data?.detail ||
+                error.message ||
+                "Unable to start simulation.",
         });
     }
 };
 
-// Get Simulation Status
+// Get simulation status from Python.
 export const getSimulationStatus = async (req, res) => {
     try {
-        const simulation = await Simulation.findOne({
-            sessionId: req.params.sessionId,
-            userId: req.user._id
-        });
-
-        if (!simulation) {
-            return res.status(404).json({
-                success: false,
-                message: "Simulation not found"
-            });
-        }
-
         const result = await getAIStatus(req.params.sessionId);
 
-        // Update status when AI reports completion or failure
-        if (result.status === "completed" || result.status === "failed") {
-            simulation.status = result.status;
-            await simulation.save();
-        }
-
-        res.json({
+        return res.json({
             success: true,
-            simulation,
-            aiResponse: result
+            simulation: result.simulation,
         });
-
     } catch (error) {
-        res.status(error.response?.status || 500).json({
+        console.error("Simulation status error:", error.message);
+
+        return res.status(error.response?.status || 500).json({
             success: false,
-            message: error.response?.data?.detail || error.message
+            message:
+                error.response?.data?.detail ||
+                error.message ||
+                "Unable to fetch simulation status.",
         });
     }
 };
 
-// Signal Plan for Simulation
+// Generate a signal plan for the current intersection.
 export const simulationSignalPlan = async (req, res) => {
     try {
-        const simulation = await Simulation.findOne({
-            sessionId: req.params.sessionId,
-            userId: req.user._id
-        });
-
-        if (!simulation) {
-            return res.status(404).json({
-                success: false,
-                message: "Simulation not found"
-            });
-        }
-
         const result = await getAISignalPlan(
             req.params.sessionId,
             req.body
         );
 
-        res.json({
+        return res.json({
             success: true,
-            message: "Signal plan generated successfully",
-            data: result
+            message: "Signal plan generated successfully.",
+            data: result.signal_plan,
         });
-
     } catch (error) {
-        res.status(error.response?.status || 500).json({
+        console.error("Signal plan error:", error.message);
+
+        return res.status(error.response?.status || 500).json({
             success: false,
-            message: error.response?.data?.detail || error.message
+            message:
+                error.response?.data?.detail ||
+                error.message ||
+                "Unable to generate signal plan.",
         });
     }
 };
 
-// Intersection Cleared
+// Mark the current intersection as cleared.
 export const intersectionCleared = async (req, res) => {
     try {
-        const simulation = await Simulation.findOne({
-            sessionId: req.params.sessionId,
-            userId: req.user._id
-        });
-
-        if (!simulation) {
-            return res.status(404).json({
-                success: false,
-                message: "Simulation not found"
-            });
-        }
-
         const result = await clearAIIntersection(
-            req.params.sessionId,
-            req.body
+            req.params.sessionId
         );
 
-        res.json({
+        return res.json({
             success: true,
-            message: "Intersection cleared successfully",
-            data: result
+            message: result.message || "Intersection cleared successfully.",
+            data: result,
         });
-
     } catch (error) {
-        res.status(error.response?.status || 500).json({
+        console.error("Intersection clearance error:", error.message);
+
+        return res.status(error.response?.status || 500).json({
             success: false,
-            message: error.response?.data?.detail || error.message
+            message:
+                error.response?.data?.detail ||
+                error.message ||
+                "Unable to clear intersection.",
         });
     }
 };

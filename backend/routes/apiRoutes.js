@@ -6,13 +6,18 @@ import simulationRoutes from "./simulationRoutes.js";
 
 const router = express.Router();
 
-// Authentication Routes
+router.get("/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    service: "LanePulse API",
+    status: "healthy",
+  });
+});
+
 router.use("/auth", authRoutes);
 
-// AI Routes
 router.use("/ai", aiRoutes);
 
-// Simulation Routes
 router.use("/simulation", simulationRoutes);
 
 export default router;

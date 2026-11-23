@@ -1,30 +1,40 @@
 import express from "express";
 
 import {
-    getRoute,
-    analyzeTraffic,
-    planSignal,
-    aiHealthCheck
+  getRoute,
+  analyzeTraffic,
+  planSignal,
+  aiHealthCheck,
 } from "../controllers/aiController.js";
 
 import {
-    validateRoute,
-    validateTraffic,
-    validateSignalPlan
+  validateRoute,
+  validateTraffic,
+  validateSignalPlan,
 } from "../validators/aiValidator.js";
+
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// AI Health Check
+// Public health check
 router.get("/health", aiHealthCheck);
 
-// Route API
+// Protect all remaining AI endpoints
+router.use(authMiddleware);
+
 router.post("/route", validateRoute, getRoute);
 
-// Traffic Analysis API
-router.post("/traffic/analyze", validateTraffic, analyzeTraffic);
+router.post(
+  "/traffic/analyze",
+  validateTraffic,
+  analyzeTraffic
+);
 
-// Signal Planning API
-router.post("/signal/plan", validateSignalPlan, planSignal);
+router.post(
+  "/signal/plan",
+  validateSignalPlan,
+  planSignal
+);
 
 export default router;

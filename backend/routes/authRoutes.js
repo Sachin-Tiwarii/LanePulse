@@ -1,21 +1,22 @@
 import express from "express";
 
 import {
-    registerUser,
-    loginUser
+  loginUser,
+  demoLogin,
+  getCurrentUser,
+  logoutUser,
 } from "../controllers/authController.js";
 
-import {
-    validateRegister,
-    validateLogin
-} from "../validators/authValidator.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Signup API
-router.post("/register", validateRegister, registerUser);
+router.post("/login", loginUser);
 
-// Login API
-router.post("/login", validateLogin, loginUser);
+router.post("/demo", demoLogin);
+
+router.get("/me", authMiddleware, getCurrentUser);
+
+router.post("/logout", authMiddleware, logoutUser);
 
 export default router;
