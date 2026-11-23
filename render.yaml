@@ -1,12 +1,9 @@
+
 services:
   - type: web
     name: green-corridor-ai
     runtime: python
     plan: free
-    buildCommand: pip install -r requirements.txt && python -m scripts.build_indore_graph
+    rootDir: Ai-service
+    buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.11
-      - key: FRONTEND_URL
-        value: "*"
