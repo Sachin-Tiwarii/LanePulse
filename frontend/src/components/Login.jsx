@@ -1,7 +1,7 @@
+
 import { useState } from "react";
 
 import {
-  Activity,
   ArrowRight,
   Eye,
   EyeOff,
@@ -17,15 +17,10 @@ import "./Login.css";
 
 function Login({ onLogin }) {
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
-
   const [loading, setLoading] = useState(false);
-
   const [demoLoading, setDemoLoading] = useState(false);
-
   const [error, setError] = useState("");
 
   const handleLogin = async (event) => {
@@ -72,20 +67,21 @@ function Login({ onLogin }) {
       <div className="login-background">
         <div className="login-glow login-glow-one" />
         <div className="login-glow login-glow-two" />
-
         <div className="login-grid" />
       </div>
 
       <section className="login-container">
         <div className="login-brand">
           <div className="login-brand-icon">
-            <Activity size={25} />
+            <img
+              src="/logo.png"
+              alt="LanePulse Logo"
+            />
           </div>
 
           <div>
             <h1>LanePulse</h1>
-
-            <p>SMART EMERGENCY CORRIDOR SYSTEM</p>
+            <p>Green Corridor AI</p>
           </div>
         </div>
 
